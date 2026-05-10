@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEMA Journey — Men's Bible Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f0c09;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(80,55,25,0.25) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(30,50,30,0.2) 0%, transparent 60%);
+    font-family: 'Libre Baskerville', serif;
+    color: #d4c4a8;
+    min-height: 100vh;
+  }
+  header {
+    border-bottom: 1px solid rgba(196,164,100,0.15);
+    padding: 40px 24px 32px;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #7a6a50;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-family: 'Crimson Pro', serif;
+  }
+  h1 {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 700;
+    color: #f0e0c0;
+    margin-bottom: 8px;
+    font-family: 'Crimson Pro', serif;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .tagline {
+    font-size: 14px;
+    color: #7a6a58;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .search-wrap {
+    max-width: 360px;
+    margin: 24px auto 0;
+  }
+  #search {
+    width: 100%;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(196,164,100,0.2);
+    border-radius: 8px;
+    color: #d4c4a8;
+    font-size: 14px;
+    font-family: 'Libre Baskerville', serif;
+    outline: none;
+  }
+  #search::placeholder { color: #5a4a38; }
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 32px 16px 80px;
+  }
+  .session {
+    margin-bottom: 8px;
+  }
+  .session-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 14px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .session-btn:hover, .session-btn.open {
+    background: rgba(196,164,100,0.08);
+    border-color: rgba(196,164,100,0.3);
+  }
+  .session-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #c8b89a;
+    font-family: 'Crimson Pro', serif;
+    letter-spacing: 0.01em;
+  }
+  .session-btn.open .session-label { color: #c4a464; }
+  .session-arrow {
+    font-size: 12px;
+    color: #665544;
+    transition: transform 0.2s;
+  }
+  .session-btn.open .session-arrow {
+    transform: rotate(180deg);
+    color: #c4a464;
+  }
+  .session-content {
+    display: none;
+    padding: 10px 4px 0;
+  }
+  .session-content.open { display: block; }
+  .episode {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .episode:hover { border-color: rgba(196,164,100,0.4); }
+  .ep-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .ep-badge {
+    background: rgba(196,164,100,0.15);
+    color: #c4a464;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-top: 2px;
+    font-family: 'Crimson Pro', serif;
+    flex-shrink: 0;
+  }
+  .ep-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #f0e6d3;
+    font-family: 'Crimson Pro', serif;
+    line-height: 1.3;
+  }
+  .ep-subtitle {
+    font-size: 12px;
+    color: #8a7a65;
+    margin-top: 2px;
+    font-style: italic;
+  }
+  .ep-summary {
+    font-size: 14px;
+    color: #b0a090;
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .ep-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 0;
+  }
+  .ep-links.has-notes { margin-bottom: 14px; }
+  .ep-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    color: #c4a464;
+    background: rgba(196,164,100,0.08);
+    border: 1px solid rgba(196,164,100,0.2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    text-decoration: none;
+    font-family: 'Libre Baskerville', serif;
+    transition: background 0.15s;
+  }
+  .ep-link:hover { background: rgba(196,164,100,0.18); }
+  .notes-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #8a9a8a;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Libre Baskerville', serif;
+    transition: all 0.15s;
+    margin-top: 14px;
+  }
+  .notes-toggle:hover {
+    border-color: rgba(138,154,138,0.4);
+    color: #aabcaa;
+  }
+  .notes-arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 10px;
+  }
+  .notes-toggle.open .notes-arrow { transform: rotate(90deg); }
+  .notes-body {
+    display: none;
+    margin-top: 10px;
+    padding: 16px 18px;
+    background: rgba(138,154,138,0.06);
+    border: 1px solid rgba(138,154,138,0.15);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: #a8b8a0;
+    line-height: 1.75;
+    white-space: pre-line;
+  }
+  .notes-body.open { display: block; }
+  .notes-empty {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #5a5050;
+    font-style: italic;
+  }
+  .notes-empty.open { display: block; }
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #3a3028;
+    font-style: italic;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Men's Bible Study</div>
+  <h1>BEMA Journey</h1>
+  <p class="tagline">A study resource following the BEMA Podcast by Marty Solomon — with links to the podcast, Bible Project videos, Bible Mapper, Enduring Word, and Friday morning discussion notes.</p>
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Search episodes..." oninput="filterEpisodes(this.value)">
+  </div>
+</header>
+
+<main id="main"></main>
+
+<footer>Trust the story.</footer>
+
+<script>
+const data = [
+  {
+    session: "Session 1 — Genesis: The Torah, Part 1",
+    id: "genesis-1",
+    episodes: [
+      { id:1, title:"Trust the Story", sub:"The Creation Story — Genesis 1", summary:"God creates the world as a good space and commissions humanity to rule it wisely. The creation story is not primarily a scientific account but a theological one — establishing who God is, who we are, and what the world is for.", links:[{l:"🎙 BEMA Episode 1",u:"https://www.bemadiscipleship.com/1"},{l:"📺 Bible Project — Genesis 1 Commentary",u:"https://bibleproject.com/videos/genesis-1"},{l:"📺 God's Spirit in Creation",u:"https://bibleproject.com/podcast/gods-spirit-creation"},{l:"🎧 Enduring Word Commentary",u:"https://enduringword.com/media/genesis/"},{l:"🗺 Bible Map — Garden of Eden",u:"https://biblemapper.com/blog/index.php/2022/04/04/the-garden-of-eden/"}], notes:null },
+      { id:2, title:"Knowing When to Say Enough", sub:"Humanity and the Fall — Genesis 2 & 3", summary:"Adam and Eve are placed in the garden as God's image-bearers. Their choice to take what was not offered fractures the relationship between God, humanity, and creation.", links:[{l:"🎙 BEMA Episode 2",u:"https://www.bemadiscipleship.com/2"},{l:"📺 Bible Project — Royal Priests of Eden",u:"https://bibleproject.com/videos/priests-of-eden"},{l:"📺 Bible Project — Tree of Life",u:"https://bibleproject.com/videos/tree-of-life"},{l:"🎧 Enduring Word Commentary",u:"https://enduringword.com/media/genesis/"},{l:"🗺 Bible Map — Garden of Eden",u:"https://biblemapper.com/blog/index.php/2022/04/04/the-garden-of-eden/"}], notes:null },
+      { id:3, title:"Master the Beast", sub:"Cain and Abel — Genesis 4", summary:"The consequences of the Fall ripple outward as Cain murders Abel. God warns Cain that sin is 'crouching at the door' and must be mastered.", links:[{l:"🎙 BEMA Episode 3",u:"https://www.bemadiscipleship.com/3"},{l:"📺 Bible Project — Dragons in the Bible",u:"https://bibleproject.com/videos/chaos-dragon"},{l:"🎧 Enduring Word Commentary",u:"https://enduringword.com/media/genesis/"},{l:"🗺 Table of Nations",u:"https://biblemapper.com/blog/index.php/2022/08/08/table-of-nations-hams-descendants/"}], notes:null },
+      { id:4, title:"His Bow in the Clouds", sub:"The Flood — Genesis 5–9", summary:"God grieves the corruption of his creation and starts again through Noah. After the flood, God places his bow in the clouds as a covenant sign — never again to destroy the earth by water.", links:[{l:"🎙 BEMA Episode 4",u:"https://www.bemadiscipleship.com/4"},{l:"📺 Bible Project — The Covenants",u:"https://bibleproject.com/videos/covenants"},{l:"📖 Why Did God Flood the World?",u:"https://bibleproject.com/articles/why-did-god-flood-the-world"},{l:"🎧 Enduring Word Commentary",u:"https://enduringword.com/media/genesis/"}], notes:null },
+      { id:5, title:"A Misplaced Curse", sub:"After the Flood — Genesis 9", summary:"Noah's son Ham dishonors his father, and Noah responds with a curse directed at Ham's son Canaan. A sobering example of how human anger can misuse divine authority.", links:[{l:"🎙 BEMA Episode 5",u:"https://www.bemadiscipleship.com/5"},{l:"📺 Bible Project — Blessing and Curse",u:"https://bibleproject.com/videos/blessing-and-curse"},{l:"🎧 Enduring Word Commentary",u:"https://enduringword.com/media/genesis/"}], notes:null },
+      { id:6, title:"A Tale of a Tower", sub:"The Tower of Babel — Genesis 10:31–11:10", summary:"Humanity gathers at Babel to build a tower and make a name for themselves. God scatters them — not as punishment but as a reset, sending people to fill the earth as he originally intended.", links:[{l:"🎙 BEMA Episode 6",u:"https://www.bemadiscipleship.com/6"},{l:"📺 Bible Project — The City",u:"https://bibleproject.com/videos/the-city"},{l:"🗺 Bible Map — Mesopotamia",u:"https://biblemapper.com/blog/index.php/2020/03/14/mesopotamia/"}], notes:null },
+      { id:7, title:"The Preface", sub:"Summary of Genesis 1–11", summary:"Genesis 1–11 functions as a preface to the entire biblical story — patterns, themes, and questions that echo through every book that follows. The story is good. Trust the story.", links:[{l:"🎙 BEMA Episode 7",u:"https://www.bemadiscipleship.com/7"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+007+The+Preface.pdf"},{l:"📺 Bible Project — Genesis 1–11",u:"https://bibleproject.com/videos/genesis-1-11/"},{l:"📺 Bible Project — Sabbath",u:"https://bibleproject.com/videos/sabbath-video/"}], notes:`Noah's name means "comfort." In Genesis 1–11 we see the brilliant design of the Scriptures.\n\n"When Lamech had lived 182 years, he had a son. He named him Noah and said, 'He will comfort us in the labor and painful toil of our hands caused by the ground the LORD has cursed.'" — Genesis 5:28–29 NIV\n\nYou are being invited to reframe your understanding of reality. The story is good — trust the story.` },
+      { id:8, title:"Buried in a Genealogy", sub:"Why Abraham? — Genesis 11:10–32 & 12", summary:"Hidden inside a genealogy is the answer to the question raised by Babel — how will God restore blessing to all nations? He chooses one man, Abram, to begin a new story.", links:[{l:"🎙 BEMA Episode 8",u:"https://www.bemadiscipleship.com/8"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+008+Buried+in+a+Genealogy.pdf"},{l:"🗺 World of the Patriarchs",u:"https://biblemapper.com/blog/index.php/2021/04/05/the-world-of-the-patriarchs/"}], notes:null },
+    ]
+  },
+  {
+    session: "Session 1 — Genesis: The Torah, Part 2",
+    id: "genesis-2",
+    episodes: [
+      { id:9, title:"Letting Go", sub:"Abram in Canaan and Egypt — Genesis 12–14", summary:"God calls Abram to leave everything familiar and go to a place he does not yet know. Abram's journey into the unknown is an act of radical trust, and God responds with covenant promise.", links:[{l:"🎙 BEMA Episode 9",u:"https://www.bemadiscipleship.com/9"},{l:"📺 Abraham and Melchizedek",u:"https://bibleproject.com/videos/abraham-and-melchizedek/"},{l:"🗺 World of the Patriarchs",u:"https://biblemapper.com/blog/index.php/2021/04/05/the-world-of-the-patriarchs/"}], notes:null },
+      { id:10, title:"Walking the Blood Path", sub:"The Blood Path Covenant — Genesis 15–17", summary:"God makes a formal covenant with Abram using the ancient blood path ritual. Remarkably, only God walks the path — this is an unconditional covenant. God binds himself to his promise regardless of what Abram does.", links:[{l:"🎙 BEMA Episode 10",u:"https://www.bemadiscipleship.com/10"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+010+Walking+the+Blood+Path.pdf"},{l:"📺 The Covenants in the Bible",u:"https://bibleproject.com/videos/covenants/"}], notes:null },
+      { id:11, title:"Here I Am", sub:"A Partner in Abraham — Genesis 18, 21–22", summary:"God tests Abraham by asking him to offer Isaac on the mountain. The Hebrew word 'nissah' (test) is about forming Abraham into the kind of person who can carry the covenant.", links:[{l:"🎙 BEMA Episode 11",u:"https://www.bemadiscipleship.com/11"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+011+Here+I+Am.pdf"},{l:"📺 Bible Project — The Test",u:"https://bibleproject.com/videos/the-test/"},{l:"📺 Peace (Shalom)",u:"https://bibleproject.com/videos/shalom-peace/"}], notes:null },
+      { id:12, title:"A Mission Realized", sub:"The Life of Isaac — Genesis 24–26", summary:"Isaac is the quiet middle generation — the bridge between Abraham's pioneering faith and Jacob's wrestling faith. God's covenant promises do not depend on dramatic personalities but on God's own faithfulness.", links:[{l:"🎙 BEMA Episode 12",u:"https://www.bemadiscipleship.com/12"},{l:"🗺 Isaac's Travels",u:"https://biblemapper.com/blog/index.php/2024/07/08/isaacs-travels/"}], notes:null },
+      { id:13, title:"Grappling with God, Part 1", sub:"The Life of Jacob, Part 1 — Genesis 25, 27–31", summary:"Jacob is a grasper and a schemer from birth. And yet God chooses him. The story of Jacob is a reminder that God works through flawed and complicated people.", links:[{l:"🎙 BEMA Episode 13",u:"https://www.bemadiscipleship.com/13"},{l:"🗺 Jacob Goes to Paddan-Aram",u:"https://biblemapper.com/blog/index.php/2024/04/15/jacob-goes-to-paddan-aram/"}], notes:null },
+      { id:14, title:"Grappling with God, Part 2", sub:"The Life of Jacob, Part 2 — Genesis 32–35", summary:"Jacob wrestles with a mysterious figure through the night. At the end, he walks away with a limp and a new name — Israel, 'one who wrestles with God.' The wound and the blessing come from the same encounter.", links:[{l:"🎙 BEMA Episode 14",u:"https://www.bemadiscipleship.com/14"},{l:"📺 The Last Will Be First",u:"https://bibleproject.com/videos/last-will-be-first/"},{l:"🗺 Jacob Travels to Southern Canaan",u:"https://biblemapper.com/blog/index.php/2024/05/27/jacob-travels-to-southern-canaan/"}], notes:null },
+      { id:15, title:"Into the Pit", sub:"The Life of Joseph, Part 1 — Genesis 37–40", summary:"Joseph is thrown into a pit by his brothers and sold into slavery in Egypt. The narrator keeps reminding us that God was with Joseph even in the pit, even in prison.", links:[{l:"🎙 BEMA Episode 15",u:"https://www.bemadiscipleship.com/15"},{l:"🗺 Joseph Is Sold into Slavery",u:"https://biblemapper.com/blog/index.php/2022/11/07/joseph-is-sold-into-slavery/"}], notes:null },
+      { id:16, title:"Out of the Pit", sub:"The Life of Joseph, Part 2 — Genesis 41–50", summary:"Joseph is elevated from prison to second-in-command of Egypt. 'You intended to harm me, but God intended it for good.' The family of promise ends up in Egypt, setting the stage for Exodus.", links:[{l:"🎙 BEMA Episode 16",u:"https://www.bemadiscipleship.com/16"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+016+Out+of+the+Pit.pdf"},{l:"🗺 Bible Map — Egypt",u:"https://biblemapper.com/blog/index.php/2019/11/30/egypt/"}], notes:null },
+    ]
+  },
+  {
+    session: "Session 1 — Exodus",
+    id: "exodus",
+    episodes: [
+      { id:17, title:"A God Who Hears the Cry", sub:"Introduction and Narrative — Exodus 4–6", summary:"The Israelites cry out from slavery in Egypt, and God hears them. The Hebrew word 'tse'aqah' (outcry) is a legal term — the cry of someone wronged, appealing to a higher authority for justice.", links:[{l:"🎙 BEMA Episode 17",u:"https://www.bemadiscipleship.com/17"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+017+A+God+Who+Hears+the+Cry.pdf"},{l:"📺 Bible Project — Justice",u:"https://bibleproject.com/videos/justice/"},{l:"📺 Moses and Aaron",u:"https://bibleproject.com/videos/moses-and-aaron/"},{l:"🗺 Bible Map — Egypt",u:"https://biblemapper.com/blog/index.php/2019/11/30/egypt/"}], notes:null },
+      { id:18, title:"A Tale of Two Kingdoms", sub:"Empire vs. Shalom — Exodus 4–6", summary:"The Exodus sets up a fundamental contrast — the kingdom of empire (Pharaoh's Egypt) versus the kingdom of shalom (God's intention). Empire extracts, hoards, and enslaves. Shalom restores, shares, and liberates.", links:[{l:"🎙 BEMA Episode 18",u:"https://www.bemadiscipleship.com/18"},{l:"📄 Companion for Episode 18",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/thecompanion/c18.pdf"}], notes:null },
+      { id:19, title:"A Strengthened Heart", sub:"The Passover and the Plagues — Exodus 5–7", summary:"The ten plagues are a systematic dismantling of the Egyptian gods, demonstrating that Yahweh is Lord over every domain Pharaoh claims.", links:[{l:"🎙 BEMA Episode 19",u:"https://www.bemadiscipleship.com/19"},{l:"📺 What Is Passover?",u:"https://bibleproject.com/videos/what-is-passover/"},{l:"📖 If God Hardened Pharaoh's Heart...",u:"https://bibleproject.com/articles/pharaohs-heart-grew-harder/"}], notes:null },
+      { id:20, title:"With All Your Heart", sub:"Crossing the Sea — Exodus 14–16", summary:"Israel crosses the sea and almost immediately begins to grumble. The wilderness is a testing ground for the heart. Can Israel trust the God who just rescued them to also provide day by day?", links:[{l:"🎙 BEMA Episode 20",u:"https://www.bemadiscipleship.com/20"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+020+With+All+Your+Heart.pdf"},{l:"📺 What the Exodus Symbolizes",u:"https://bibleproject.com/videos/the-exodus-way/"}], notes:null },
+      { id:21, title:"With All Your Soul", sub:"Test of the Soul — Exodus 17", summary:"After the song of deliverance, the story takes a surprising turn. The Israelites get hungry and thirsty and criticize Moses. We're left wondering if Israel's heart is as hard as Pharaoh's.", links:[{l:"🎙 BEMA Episode 21",u:"https://www.bemadiscipleship.com/21"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+021+With+All+Your+Soul+%26+Very.pdf"},{l:"📺 The Wilderness",u:"https://bibleproject.com/videos/the-wilderness/"}], notes:`After the people sing their song, the story takes a surprising turn. The Israelites trek through the wilderness on their way to Mount Sinai and get really hungry and thirsty. In their distress, they start criticizing Moses and God for rescuing them from Egypt!\n\nEven though God graciously provides food and water for his people, these events cast a dark shadow. As readers, we wonder if Israel's heart is as hard as Pharaoh's. We're left with that haunting question as we turn to read about Israel's experience at Mount Sinai.` },
+      { id:22, title:"Under the Chuppah", sub:"The Ten Commandments — Exodus 19–20", summary:"At Mount Sinai, God enters into a covenant with Israel that has all the features of a marriage. The Ten Commandments are not rules to earn God's favor — they are the terms of a covenant relationship already initiated by grace.", links:[{l:"🎙 BEMA Episode 22",u:"https://www.bemadiscipleship.com/22"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+022+Under+the+Chuppah.pdf"},{l:"📺 Exodus 19–40",u:"https://bibleproject.com/videos/exodus-19-40/"},{l:"📺 The Purpose of the Law",u:"https://bibleproject.com/videos/law/"}], notes:null },
+      { id:23, title:"Falling on Joyful Faces", sub:"The Tabernacle — Exodus 25–40", summary:"The tabernacle is God's response to Israel's request — 'come and dwell among us.' It is a portable Eden where the presence of God travels with his people. The detailed instructions are not tedious — they are love language.", links:[{l:"🎙 BEMA Episode 23",u:"https://www.bemadiscipleship.com/23"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+023+Falling+on+Joyful+Faces.pdf"}], notes:null },
+      { id:24, title:"Creating a Space", sub:"Spiritual Disciplines — Exodus 25–40", summary:"In Genesis, God created the space and our task was to fill it. In Exodus, God says: you create the space, and I'll fill it — with goodness, justice, and rest.", links:[{l:"🎙 BEMA Episode 24",u:"https://www.bemadiscipleship.com/24"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+024+Creating+a+Space.pdf"}], notes:`In Genesis, God created the space — a beautiful space — and our task was to fill it. Yet humanity filled it with things that didn't fit what the original intent and plan was for creation — the Kingdom.\n\nIn Exodus, God says you create the space, and I'll fill it. I'll fill it with goodness and justice and rest and all the things that I intended your world and life to be filled with.` },
+    ]
+  },
+  {
+    session: "Session 1 — Leviticus & Images of the Desert",
+    id: "leviticus-desert",
+    episodes: [
+      { id:25, title:"A Kingdom of What?", sub:"Leviticus", summary:"Leviticus is not a book of outdated rules — it is a vision of what a community looks like when God lives in its midst. If the Holy Spirit now resides in us — what do we do with this responsibility?", links:[{l:"🎙 BEMA Episode 25",u:"https://www.bemadiscipleship.com/25"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+025+A+Kingdom+of+What.pdf"},{l:"📺 Bible Project — Leviticus",u:"https://bibleproject.com/videos/leviticus/"},{l:"📺 Holiness",u:"https://bibleproject.com/videos/holiness/"},{l:"📺 Sacrifice and Atonement",u:"https://bibleproject.com/videos/sacrifice-and-atonement/"}], notes:`As we continue to wrestle with the Text, its original context, audience, and how that should impact Christians today, Leviticus seeks to inspire us to action. This book is not written to us as modern, Western Christians. So then why, or how, can we be priests today?\n\nIf the Holy Spirit now also resides in me — in you — what do we do with this responsibility?` },
+      { id:26, title:"Images of the Desert: Shepherd", sub:"Desert Images", summary:"The shepherd is one of the most important images in all of Scripture. To understand what it means for God to be 'my shepherd' you need to understand what a real shepherd does in the landscape of the ancient Near East.", links:[{l:"🎙 BEMA Episode 26",u:"https://www.bemadiscipleship.com/26"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+026+Images+of+the+Desert+Shepherd.pdf"}], notes:`When we come to a fork in the path in the Judean Wilderness above Jericho, we can be sure that our Shepherd knows the way.\n\nIf you look closely at the rocky desert landscape, you can actually see tufts of grass growing out from underneath the rocks — the shepherd knows where the provision is, even when we cannot see it.` },
+      { id:27, title:"Images of the Desert: Rotem and Acacia", sub:"Desert Images", summary:"The Rotem tree and the Acacia tree are both desert plants with deep symbolic significance. To be a gift of the desert — to bring shade at just the right time — is a picture of how God provides.", links:[{l:"🎙 BEMA Episode 27",u:"https://www.bemadiscipleship.com/27"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+027+Images+of+the+Desert+Rotem+and+Acacia.pdf"}], notes:`To be a gift of the desert. To be shade — bringing just enough at just the right time.\n\nThe Acacia tree: tough, resilient, deeply rooted. It thrives where nothing else can. The wood of the Acacia was used to build the Ark of the Covenant — the dwelling place of God's presence.` },
+      { id:28, title:"Images of the Desert: Ar'ar and Tamarisk", sub:"Desert Images", summary:"The Ar'ar tree looks lush on the outside but is full of death inside — an image of the person who trusts in flesh rather than God. Abraham plants a Tamarisk as an act of faith for his grandchildren.", links:[{l:"🎙 BEMA Episode 28",u:"https://www.bemadiscipleship.com/28"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+028+Images+of+the+Desert+Ar'ar+and+Tamarisk.pdf"}], notes:`The Ar'ar: the man who trusts in flesh looks incredibly lush and fertile on the outside — but is full of death and emptiness on the inside.\n\nAbraham goes and plants a Tamarisk tree. It is a statement of faith; he's not planting it for himself. He is planting it for his grandchildren. He is believing God's promise and staking a claim.` },
+      { id:29, title:"Images of the Desert: Wadi and En Gedi", sub:"Desert Images", summary:"A wadi looks dry most of the year but when the rains come, floods with rushing water and becomes a place of life. En Gedi is a dramatic oasis in the Judean wilderness — both are images of what God can do in dry places.", links:[{l:"🎙 BEMA Episode 29",u:"https://www.bemadiscipleship.com/29"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+029+Images+of+the+Desert+Wadi+and+En+Gedi.pdf"}], notes:`Restricted sight in the desert — what's around the next bend? The wadi forces you to trust the path, even when you cannot see ahead.\n\nEn Gedi: an oasis. A refuge in the wilderness. In the middle of absolute desolation, God places a spring of living water. This is the landscape David knew when he hid from Saul — and it shapes how he writes about God in the Psalms.` },
+    ]
+  },
+  {
+    session: "Session 1 Bridge — Numbers & Deuteronomy",
+    id: "bridge",
+    episodes: [
+      { id:30, title:"Lead with Your Voice", sub:"Moses and the Promised Land", summary:"Numbers is the story of a generation that could not trust — and the painful consequence of letting fear lead instead of faith. Moses himself will not enter the land, but his voice shapes the generation that will.", links:[{l:"🎙 BEMA Episode 30",u:"https://www.bemadiscipleship.com/30"},{l:"📺 Bible Project — Numbers",u:"https://bibleproject.com/videos/numbers/"}], notes:null },
+      { id:31, title:"Remember Where You Came From", sub:"The Call of Deuteronomy", summary:"Moses delivers his final speeches to Israel on the edge of the Promised Land. Deuteronomy is the great 'Remember' of the Torah. Don't forget who you are. Don't forget whose you are.", links:[{l:"🎙 BEMA Episode 31",u:"https://www.bemadiscipleship.com/31"},{l:"📺 Bible Project — Deuteronomy",u:"https://bibleproject.com/videos/deuteronomy/"}], notes:null },
+      { id:32, title:"Session 1 Capstone", sub:"Conclusion of Session 1", summary:"A summary and reflection on everything covered in Session 1 — from Creation through the end of the Torah. A chance to see the big picture before moving into the story of Israel in the land.", links:[{l:"🎙 BEMA Episode 32",u:"https://www.bemadiscipleship.com/32"}], notes:null },
+    ]
+  },
+  {
+    session: "Session 2 — Joshua & the Judges",
+    id: "joshua-judges",
+    episodes: [
+      { id:33, title:"Session 2 Intro", sub:"Introduction to Session 2", summary:"An introduction to Session 2, setting the context for Israel's life in the land — the period of the conquest, the judges, the monarchy, and the writings.", links:[{l:"🎙 BEMA Episode 33",u:"https://www.bemadiscipleship.com/33"}], notes:null },
+      { id:34, title:"The Hardest Story in the Bible", sub:"Joshua, Part 1", summary:"Joshua leads Israel into the Promised Land. Marty wrestles honestly with the difficult nature of the conquest narratives and what they mean within the larger story of God.", links:[{l:"🎙 BEMA Episode 34",u:"https://www.bemadiscipleship.com/34"},{l:"📺 Bible Project — Joshua",u:"https://bibleproject.com/videos/joshua/"}], notes:null },
+      { id:35, title:"Crossroads of the Earth", sub:"Joshua, Part 2", summary:"The land is divided among the tribes of Israel. The geography of Canaan as the crossroads of the ancient world gives rich context to why God planted his people there.", links:[{l:"🎙 BEMA Episode 35",u:"https://www.bemadiscipleship.com/35"},{l:"📺 Bible Project — Joshua",u:"https://bibleproject.com/videos/joshua/"}], notes:null },
+      { id:36, title:"The Redemption Cycle", sub:"Judges", summary:"The book of Judges follows a recurring pattern — Israel abandons God, faces consequences, cries out, and is rescued by a judge. A sobering look at the human tendency to forget the story.", links:[{l:"🎙 BEMA Episode 36",u:"https://www.bemadiscipleship.com/36"},{l:"📺 Bible Project — Judges",u:"https://bibleproject.com/videos/judges/"}], notes:null },
+      { id:37, title:"A Love Story", sub:"Ruth", summary:"Set in the darkest period of the Judges, Ruth is a story of radical faithfulness and hesed (covenant love). A Moabite woman becomes part of the lineage of David — and ultimately of Jesus.", links:[{l:"🎙 BEMA Episode 37",u:"https://www.bemadiscipleship.com/37"},{l:"📺 Bible Project — Ruth",u:"https://bibleproject.com/videos/ruth/"}], notes:null },
+    ]
+  },
+  {
+    session: "Session 2 — The Kingdom",
+    id: "kingdom",
+    episodes: [
+      { id:38, title:"A Donkey Herder to Lead Us", sub:"Saul and David", summary:"Israel demands a king. God gives them Saul — and then David. The contrast between these two leaders reveals what it means to be a king after God's own heart.", links:[{l:"🎙 BEMA Episode 38",u:"https://www.bemadiscipleship.com/38"},{l:"📺 Bible Project — 1 Samuel",u:"https://bibleproject.com/videos/1samuel/"}], notes:null },
+      { id:39, title:"A King After God's Own Heart", sub:"David and Goliath", summary:"David's story continues — his victories, his failures, and God's unwavering covenant with him. The Davidic covenant becomes a critical thread running through the rest of Scripture.", links:[{l:"🎙 BEMA Episode 39",u:"https://www.bemadiscipleship.com/39"},{l:"📺 Bible Project — 2 Samuel",u:"https://bibleproject.com/videos/2samuel/"}], notes:null },
+      { id:40, title:"One Story, Two Sources", sub:"Samuel & Kings and Chronicles", summary:"The same history told from two different perspectives — Samuel/Kings from a prophetic lens, Chronicles from a priestly lens. Understanding the difference unlocks both books.", links:[{l:"🎙 BEMA Episode 40",u:"https://www.bemadiscipleship.com/40"},{l:"📺 Bible Project — 1 & 2 Kings",u:"https://bibleproject.com/videos/1-2kings/"},{l:"📺 Bible Project — 1 & 2 Chronicles",u:"https://bibleproject.com/videos/1-2chronicles/"}], notes:null },
+      { id:41, title:"The Story Behind the Story", sub:"David and Solomon in Chronicles", summary:"Chronicles focuses on temple worship and the idealized kingdom of David and Solomon, pointing forward to a restored kingdom and a greater king to come.", links:[{l:"🎙 BEMA Episode 41",u:"https://www.bemadiscipleship.com/41"},{l:"📺 Bible Project — 1 & 2 Chronicles",u:"https://bibleproject.com/videos/1-2chronicles/"}], notes:null },
+      { id:42, title:"The Fire of Elijah", sub:"Elijah", summary:"Elijah stands as one of the most dramatic prophetic figures in the Old Testament. His confrontation with the prophets of Baal and his encounter with God on the mountain reveal a deeply human prophet.", links:[{l:"🎙 BEMA Episode 42",u:"https://www.bemadiscipleship.com/42"},{l:"📺 Bible Project — 1 & 2 Kings",u:"https://bibleproject.com/videos/1-2kings/"}], notes:null },
+      { id:43, title:"Go in Peace", sub:"Naaman", summary:"The story of Naaman the Syrian general is a surprising window into God's heart for all nations. A story that foreshadows the inclusion of the Gentiles throughout the rest of Scripture.", links:[{l:"🎙 BEMA Episode 43",u:"https://www.bemadiscipleship.com/43"},{l:"📺 Bible Project — 1 & 2 Kings",u:"https://bibleproject.com/videos/1-2kings/"}], notes:null },
+    ]
+  },
+  {
+    session: "Session 2 — The Writings",
+    id: "writings",
+    episodes: [
+      { id:44, title:"Our Harps in the Trees", sub:"The Psalms", summary:"The Psalms are Israel's prayer book — covering the full range of human emotion from praise to lament to anger to hope.", links:[{l:"🎙 BEMA Episode 44",u:"https://www.bemadiscipleship.com/44"},{l:"📺 Bible Project — Psalms",u:"https://bibleproject.com/videos/psalms/"}], notes:null },
+      { id:45, title:"Wisdom and Meaning", sub:"Proverbs and Ecclesiastes", summary:"Two very different wisdom books — Proverbs offers practical guidance for living well, while Ecclesiastes wrestles honestly with the limits of human wisdom and the mystery of life under the sun.", links:[{l:"🎙 BEMA Episode 45",u:"https://www.bemadiscipleship.com/45"},{l:"📺 Bible Project — Proverbs",u:"https://bibleproject.com/videos/proverbs/"},{l:"📺 Bible Project — Ecclesiastes",u:"https://bibleproject.com/videos/ecclesiastes/"}], notes:null },
+      { id:46, title:"Song of Sexuality", sub:"Song of Songs", summary:"Often misunderstood or skipped over, the Song of Songs is a celebration of love and intimacy that points back to Eden and forward to the restored relationship between God and his people.", links:[{l:"🎙 BEMA Episode 46",u:"https://www.bemadiscipleship.com/46"},{l:"📺 Bible Project — Song of Songs",u:"https://bibleproject.com/videos/song-of-songs/"}], notes:null },
+      { id:47, title:"The Lord's Mouthpiece", sub:"Introduction to the Prophets", summary:"Before diving into the individual prophets, Marty lays the essential groundwork — who the prophets were, how prophecy works in the Hebrew context, and what the prophets were actually trying to say.", links:[{l:"🎙 BEMA Episode 47",u:"https://www.bemadiscipleship.com/47"}], notes:null },
+    ]
+  },
+  {
+    session: "Session 2 — The Prophets: Pre-Assyrian",
+    id: "pre-assyrian",
+    episodes: [
+      { id:48, title:"Amos: Plumb Line", sub:"Pre-Assyrian — Israel", summary:"Amos speaks to the northern kingdom of Israel about a justice crisis — they are becoming 'empire' and forgetting 'the story.' The image of a plumb line measures how far they have drifted from God's standard.", links:[{l:"🎙 BEMA Episode 48",u:"https://www.bemadiscipleship.com/48"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+048+Amos+Plumb+Line.pdf"},{l:"📺 Bible Project — Amos",u:"https://bibleproject.com/videos/amos"}], notes:`The image we see is of a plumb line from the prophet Amos. We see Amos talking to the kingdom of Israel about a justice problem — they are becoming "empire" and forgetting "the story."\n\nMarty talks about the "cost of our luxury coming on the backs of others" — how do we see this happening today?\n\nAmos is a good reminder to us as North American Christians to remember the story. God's story reminds us that we are not slaves, and our worth is not in how much we do — we are called to rest first.\n\nAs Christians, we are to care for the alien, the orphan, and the widow. How can we be part of the restoration — not retribution — but helping God put things back to the way they were?` },
+      { id:49, title:"Hosea: Prostitute", sub:"Pre-Assyrian — Israel", summary:"God calls Hosea to marry an unfaithful woman as a living parable of Israel's unfaithfulness. One of the most personal and emotionally raw pictures of God's relentless pursuit of his people.", links:[{l:"🎙 BEMA Episode 49",u:"https://www.bemadiscipleship.com/49"},{l:"📺 Bible Project — Hosea",u:"https://bibleproject.com/videos/hosea"}], notes:null },
+      { id:50, title:"Micah: Judge", sub:"Pre-Assyrian — Judah", summary:"Micah speaks to the southern kingdom addressing both moral failure and idolatry. Chapter 6 gives the timeless call: act justly, love mercy, walk humbly.", links:[{l:"🎙 BEMA Episode 50",u:"https://www.bemadiscipleship.com/50"},{l:"📺 Bible Project — Micah",u:"https://bibleproject.com/videos/micah"}], notes:`The prophet Micah was talking to the southern kingdom — morality issues, idolatry, and injustice.\n\nMicah 5:2 — "But you, Bethlehem Ephrathah, though you are small among the clans of Judah, out of you will come for me one who will be ruler over Israel..." This is "prophetic foreshortening" — in Micah's time this would not have brought to mind Jesus but of David. That said, it does not mean it is not also talking about Jesus.\n\nThree major points from chapter 6: Act justly, Love Mercy, and Walk Humbly. This is God's call to his people.` },
+      { id:51, title:"1 Isaiah: Vineyard", sub:"Pre-Assyrian — Judah", summary:"The first section of Isaiah (chapters 1–12) confronts Judah's moral and spiritual failures. The vineyard imagery of chapter 5 is a powerful picture of a people who have not produced the fruit God intended.", links:[{l:"🎙 BEMA Episode 51",u:"https://www.bemadiscipleship.com/51"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+051+1+Isaiah+Vineyard.pdf"},{l:"📺 Bible Project — Isaiah 1–39",u:"https://bibleproject.com/videos/isaiah-1-39"}], notes:`Isaiah is divided into four sections: 1 Isaiah (Ch. 1–12), 2 Isaiah (Ch. 13–39), 3 Isaiah (Ch. 40–55), 4 Isaiah (Ch. 56–66).\n\nIn chapter 5 we see imagery of a vineyard built in terraces. The walls are kept up by the person below — good imagery of community. If one person's wall comes down, it washes out all the terraces below.\n\nIsaiah is calling out religious leaders whose hearts are not in the right place. God is not interested in the worship of people whose hearts are wrong — echoed by Jesus: "Love the Lord your God with all your heart, soul and mind and love your neighbor as yourself."` },
+    ]
+  },
+  {
+    session: "Session 2 — The Prophets: Assyrian",
+    id: "assyrian",
+    episodes: [
+      { id:52, title:"Jonah: Potential", sub:"Assyrian — Israel", summary:"Jonah runs from God's call to preach to Israel's enemies in Nineveh. The book raises profound questions about the limits of God's mercy — and our willingness to extend it to those we consider enemies.", links:[{l:"🎙 BEMA Episode 52",u:"https://www.bemadiscipleship.com/52"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+052+Jonah+Potential.pdf"},{l:"📺 Bible Project — Jonah",u:"https://bibleproject.com/videos/jonah"}], notes:`Jonah is 180° from what God wants him to do. When he finally makes it to the city, he does the bare minimum. God is proving he still uses small things to do great works.\n\nIn Jonah chapter 4, Jonah seems to misquote Exodus 34 as his reason for not wanting to go — God's mercy is so vast that even Israel's enemies have potential.\n\nInteresting fact: 153 leaves on the vine that grows to give Jonah shade. This number designates the pagan/Gentile nations — God wants to bless all nations, a throwback to the Abrahamic covenant.\n\nRepentance brings us to potential. Even our enemies have potential. Let's make sure we are not like Jonah.` },
+      { id:53, title:"Nahum: Diyn", sub:"Assyrian — Israel", summary:"Where Jonah showed God's slow anger and abundant mercy toward Nineveh, Nahum — written hundreds of years later — shows God's ultimate judgment on that same city.", links:[{l:"🎙 BEMA Episode 53",u:"https://www.bemadiscipleship.com/53"},{l:"📺 Bible Project — Nahum",u:"https://bibleproject.com/videos/nahum"}], notes:`Nahum is the opposite side of Jonah. The time period between them was approximately a few hundred years — we overlaid this with the ~250 years the United States has been around.\n\nWhere is God? Why hasn't he done something about injustice in the world today? These questions were asked in ancient times just as we ask them today.\n\nCan we be confident in His timing? Can we continue to spread the good news so that when God's time comes, more will be in eternity with us? Even our "enemies" are the same humanity God wants to be in relationship with.` },
+      { id:54, title:"Zephaniah: T'shuvah", sub:"Assyrian — Judah", summary:"The word associated with Zephaniah is 'repentance' (T'shuvah) — to turn back to what God has created us to be. Zephaniah connects idolatry and injustice as inseparable problems.", links:[{l:"🎙 BEMA Episode 54",u:"https://www.bemadiscipleship.com/54"},{l:"📺 Bible Project — Zephaniah",u:"https://bibleproject.com/videos/zephaniah"}], notes:`T'shuvah — to turn back to what God has created us to be. We don't need to become something else. God calls us back to relationship with him.\n\nWith Zephaniah, injustice towards people is connected to the idolatry of things — they are not separate, but the result of each other.\n\nFive major points throughout the three chapters: the problem, the judgment, why is God doing this?, the results, the hope.\n\nSo why do God's people — then and now — stray away from what we know is good for us? The laws God has given us are not to hinder us but to give us more freedom and peace.` },
+      { id:55, title:"2 Isaiah: Woe", sub:"Assyrian — Judah", summary:"The second section of Isaiah (chapters 13–39) pronounces woes against the nations and against Israel. God is disappointed that no one seems to care about people.", links:[{l:"🎙 BEMA Episode 55",u:"https://www.bemadiscipleship.com/55"},{l:"📺 Bible Project — Isaiah 1–39",u:"https://bibleproject.com/videos/isaiah-1-39"}], notes:`Two important terms for studying Scripture:\n\nExegesis ("To Lead Out") — an objective approach seeking to discover the author's original intent. Goal: let the text speak for itself.\n\nEisegesis ("To Lead Into") — a subjective approach where the reader imposes their own biases onto the text. Often starts with a conclusion and searches for verses to support it.\n\nChapters 25–27: Hope and praise | Chapters 28–31: Woe | Chapter 32:1–8: Hope | Chapters 33–34: Woe | Chapter 35: Hope | Chapters 36–39: History` },
+    ]
+  },
+  {
+    session: "Session 2 — The Prophets: Babylonian",
+    id: "babylonian",
+    episodes: [
+      { id:56, title:"Jeremiah: Weeping", sub:"Babylonian", summary:"Jeremiah is called the 'weeping prophet' — tasked with telling Judah that Babylon is coming and there is no stopping it. In Jeremiah, idolatry and injustice are fully exposed as inseparable.", links:[{l:"🎙 BEMA Episode 56",u:"https://www.bemadiscipleship.com/56"},{l:"📺 Bible Project — Jeremiah",u:"https://bibleproject.com/videos/jeremiah"}], notes:`Jeremiah is given the daunting task of telling the people that the Babylonian empire is coming and it would be better for them to lay down their weapons and let it happen.\n\nIn Jeremiah, the distinction between idolatry and injustice is now fully dissolved — they are completely connected. You don't get one without the other.\n\nWhat are our gods of the 21st century? Consumerism? Wealth? Power? Influence? What is keeping us from paying attention to and caring for people?\n\nJeremiah 7:30 — the valley of slaughter, also known as "Gehenna," a translation for hell. Parallel passage: 2 Kings 23:10.` },
+      { id:57, title:"Lamentations: Lament and Hope", sub:"Babylonian", summary:"Written in the aftermath of Jerusalem's destruction, Lamentations is one of the most honest expressions of grief in all of Scripture — and a reminder that there is space for lament.", links:[{l:"🎙 BEMA Episode 57",u:"https://www.bemadiscipleship.com/57"},{l:"📺 Bible Project — Lamentations",u:"https://bibleproject.com/videos/lamentations"},{l:"📖 The ABCs of Hebrew Acrostic Poems",u:"https://tyndalehouse.com/2023/11/09/hebrew-acrostics/"}], notes:`The literary style has two voices — a "narrator" and a "woman." In 1:1–8 you hear the narrator; in verse 9 you begin to hear the woman.\n\nThe book contains a chiasm: chapters 1, 2, 4, and 5 have 22 verses; chapter 3 has 66 verses. There are 22 letters in the Hebrew alphabet. Lamentations 3:19–28 seems to be the center — the main theme being hope and sitting in silence.\n\nIt is OK to be angry with God — he can handle it. It is OK to grieve. What are we doing with our anger and lament? How are we sitting in these times and making space for God?` },
+      { id:58, title:"Habakkuk: Watchtower", sub:"Babylonian", summary:"Habakkuk questions God directly and plants himself in his watchtower to wait for an answer. God's response reframes everything, and Habakkuk moves from complaint to one of the most profound expressions of trust in Scripture.", links:[{l:"🎙 BEMA Episode 58",u:"https://www.bemadiscipleship.com/58"},{l:"📺 Bible Project — Habakkuk",u:"https://bibleproject.com/videos/habakkuk"}], notes:`Habakkuk is similar to Jonah — questioning God, but not in full rebellion. He asks: "Why do you make me look at injustice?" God responds by describing how bad the Babylonians are. Habakkuk pushes back: "That's not an answer — I'm going to stand in my watchtower until you give me one."\n\n"Sometimes God keeps the future from us in order to enable us to walk into it — if we knew what really waited for us on the other side of the door, we might not go through it."\n\n"Though the fig tree does not bud and there are no grapes on the vines, though the olive crop fails and the fields produce no food, though there are no sheep in the pen and no cattle in the stalls, yet I will rejoice in the Lord, I will be joyful in God my Savior." — Habakkuk 3:17–18 NIV` },
+      { id:59, title:"Obadiah: Petra", sub:"Babylonian", summary:"The shortest book in the Old Testament, Obadiah pronounces judgment on Edom for their pride and for standing by while Jerusalem fell.", links:[{l:"🎙 BEMA Episode 59",u:"https://www.bemadiscipleship.com/59"},{l:"📄 PDF Presentation",u:"https://bemadiscipleship.s3.us-east-2.amazonaws.com/BEMA+059+Obadiah+Petra.pdf"},{l:"📺 Bible Project — Obadiah",u:"https://bibleproject.com/videos/obadiah"}], notes:null },
+      { id:60, title:"Joel: Locusts", sub:"Babylonian", summary:"Joel uses a devastating locust plague as a call to national repentance. His words about the outpouring of God's Spirit are later quoted by Peter on the day of Pentecost.", links:[{l:"🎙 BEMA Episode 60",u:"https://www.bemadiscipleship.com/60"},{l:"📺 Bible Project — Joel",u:"https://bibleproject.com/videos/joel"}], notes:null },
+      { id:61, title:"Ezekiel: Strength", sub:"Babylonian", summary:"Ezekiel ministers to the exiles in Babylon with some of the most dramatic and visionary prophetic literature in the Old Testament. His message is one of both judgment and radical hope for restoration.", links:[{l:"🎙 BEMA Episode 61",u:"https://www.bemadiscipleship.com/61"},{l:"📺 Bible Project — Ezekiel 1–33",u:"https://bibleproject.com/videos/ezekiel-1-33"},{l:"📺 Bible Project — Ezekiel 34–48",u:"https://bibleproject.com/videos/ezekiel-34-48"}], notes:null },
+      { id:62, title:"Daniel: Son of Man", sub:"Babylonian", summary:"Daniel navigates faithfulness to God while living under foreign empire. His visions introduce the 'Son of Man' figure that Jesus will later apply to himself.", links:[{l:"🎙 BEMA Episode 62",u:"https://www.bemadiscipleship.com/62"},{l:"📺 Bible Project — Daniel",u:"https://bibleproject.com/videos/daniel"}], notes:null },
+      { id:63, title:"Job: Perspective", sub:"Babylonian", summary:"Job raises the hardest questions about suffering, justice, and God's character. Set outside of Israel's history, it is a wisdom book placed here — in exile — for a reason.", links:[{l:"🎙 BEMA Episode 63",u:"https://www.bemadiscipleship.com/63"},{l:"📺 Bible Project — Job",u:"https://bibleproject.com/videos/job"}], notes:`Marty's take is that Job predates its current form and was reworked across generations — Satan was added later, and the original figure may have been tied to a character called Typhon. We walked through this without reaching firm conclusions, treating it as a jumping-off point for further study.\n\nThe Midrash tradition came up — that Jethro, Balaam, and Job were the three magicians in Egypt, with Jethro serving Pharaoh before Moses arrived.\n\nJob is described as God-fearing and righteous but never explicitly Jewish — you would just assume he was unless someone flags it, and the text never does.\n\nMarty frames the book around a "heavenly wager" between God and Satan. Worth holding loosely — this is Marty's interpretation, not a direct biblical claim.\n\nThe question was raised: is the book partly a cop-out for God? A way of saying the world is complicated and things just happen? We sat with that tension without resolving it.\n\nThe Bible Project video on Job was helpful for understanding the book's structure. The chiasm angle on Job is worth revisiting next time.` },
+      { id:64, title:"3 Isaiah: Servant", sub:"Babylonian", summary:"The third section of Isaiah (chapters 40–55) shifts dramatically in tone — from judgment to comfort. Written to a people in exile, it introduces the profound 'Servant Songs,' four poems describing a mysterious figure who suffers on behalf of others. This section contains some of the most quoted prophecy in the New Testament.", links:[{l:"🎙 BEMA Episode 64",u:"https://www.bemadiscipleship.com/64"},{l:"📺 Bible Project — Isaiah 40–55",u:"https://bibleproject.com/videos/isaiah-40-55/"}], notes:null },
+    ]
+  },
+];
+
+let openSessions = new Set();
+let openNotes = new Set();
+
+function buildSessions(filter) {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  data.forEach(session => {
+    const eps = filter
+      ? session.episodes.filter(e =>
+          e.title.toLowerCase().includes(filter) ||
+          e.sub.toLowerCase().includes(filter) ||
+          String(e.id).includes(filter)
+        )
+      : session.episodes;
+    if (eps.length === 0) return;
+
+    const isOpen = openSessions.has(session.id) || !!filter;
+
+    const sec = document.createElement('div');
+    sec.className = 'session';
+
+    const btn = document.createElement('button');
+    btn.className = 'session-btn' + (isOpen ? ' open' : '');
+    btn.innerHTML = `<span class="session-label">${session.session}</span><span class="session-arrow">▼</span>`;
+    btn.onclick = () => {
+      const wasOpen = openSessions.has(session.id);
+      wasOpen ? openSessions.delete(session.id) : openSessions.add(session.id);
+      btn.classList.toggle('open');
+      content.classList.toggle('open');
+    };
+
+    const content = document.createElement('div');
+    content.className = 'session-content' + (isOpen ? ' open' : '');
+
+    eps.forEach(ep => {
+      const card = document.createElement('div');
+      card.className = 'episode';
+
+      const hasNotes = ep.notes !== null;
+      const noteKey = ep.id;
+      const noteOpen = openNotes.has(noteKey);
+
+      card.innerHTML = `
+        <div class="ep-header">
+          <span class="ep-badge">EP ${ep.id}</span>
+          <div>
+            <div class="ep-title">${ep.title}</div>
+            <div class="ep-subtitle">${ep.sub}</div>
+          </div>
+        </div>
+        <p class="ep-summary">${ep.summary}</p>
+        <div class="ep-links${hasNotes ? ' has-notes' : ''}">
+          ${ep.links.map(lk => `<a class="ep-link" href="${lk.u}" target="_blank" rel="noopener noreferrer">${lk.l}</a>`).join('')}
+        </div>
+        ${hasNotes ? `
+          <button class="notes-toggle${noteOpen ? ' open' : ''}" data-id="${noteKey}">
+            <span class="notes-arrow">▶</span> 📝 Discussion Notes
+          </button>
+          ${ep.notes
+            ? `<div class="notes-body${noteOpen ? ' open' : ''}" data-notes="${noteKey}">${ep.notes}</div>`
+            : `<div class="notes-empty${noteOpen ? ' open' : ''}" data-empty="${noteKey}">Notes to be added.</div>`
+          }
+        ` : ''}
+      `;
+
+      if (hasNotes) {
+        setTimeout(() => {
+          const toggle = card.querySelector('.notes-toggle');
+          if (toggle) {
+            toggle.onclick = () => {
+              const id = parseInt(toggle.dataset.id);
+              const wasOpen = openNotes.has(id);
+              wasOpen ? openNotes.delete(id) : openNotes.add(id);
+              toggle.classList.toggle('open');
+              const body = card.querySelector(`[data-notes="${id}"]`) || card.querySelector(`[data-empty="${id}"]`);
+              if (body) body.classList.toggle('open');
+            };
+          }
+        }, 0);
+      }
+
+      content.appendChild(card);
+    });
+
+    sec.appendChild(btn);
+    sec.appendChild(content);
+    main.appendChild(sec);
+  });
+}
+
+function filterEpisodes(val) {
+  const q = val.trim().toLowerCase();
+  buildSessions(q.length > 1 ? q : null);
+}
+
+buildSessions(null);
+</script>
+</body>
+</html>
